@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Till you come back to Europe</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 35%, #6ee7b7 65%, #d1fae5 100%);
+      font-family: 'Lato', sans-serif;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* ── Floating clovers ── */
+    .clovers-container {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .clover {
+      position: absolute;
+      bottom: -70px;
+      animation: floatUp linear infinite;
+      opacity: 0;
+    }
+
+    .clover span {
+      display: block;
+      line-height: 1;
+      user-select: none;
+    }
+
+    @keyframes floatUp {
+      0%   { transform: translateY(0)   rotate(0deg)   scale(1);   opacity: 0; }
+      8%   { opacity: 0.85; }
+      75%  { opacity: 0.55; }
+      100% { transform: translateY(-115vh) rotate(-30deg) scale(0.75); opacity: 0; }
+    }
+
+    /* ── Main card ── */
+    .card {
+      position: relative;
+      z-index: 1;
+      background: rgba(255, 255, 255, 0.50);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1.5px solid rgba(110, 231, 183, 0.65);
+      border-radius: 28px;
+      padding: clamp(2rem, 6vw, 4rem) clamp(1.5rem, 8vw, 5rem);
+      max-width: min(680px, 92vw);
+      width: 100%;
+      text-align: center;
+      box-shadow:
+        0 8px 32px rgba(52, 168, 110, 0.22),
+        0 2px 8px rgba(110, 231, 183, 0.25);
+    }
+
+    .tagline {
+      font-family: 'Playfair Display', serif;
+      font-style: italic;
+      font-size: clamp(1.25rem, 4vw, 2rem);
+      color: #065f46;
+      line-height: 1.4;
+      margin-bottom: 2.5rem;
+      text-shadow: 0 1px 3px rgba(6, 95, 70, 0.12);
+    }
+
+    /* ── Countdown grid ── */
+    .countdown {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: clamp(0.5rem, 2vw, 1.25rem);
+      margin-bottom: 2rem;
+    }
+
+    .unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .unit .number {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.4rem, 9vw, 4.5rem);
+      font-weight: 600;
+      color: #047857;
+      line-height: 1;
+      min-width: 2ch;
+      text-align: center;
+      transition: transform 0.15s ease;
+    }
+
+    .unit .number.bump {
+      transform: scale(1.18);
+    }
+
+    .unit .label {
+      font-size: clamp(0.65rem, 2vw, 0.8rem);
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #059669;
+    }
+
+    /* ── Arrival date ── */
+    .arrival {
+      font-size: clamp(0.75rem, 2.2vw, 0.9rem);
+      color: #065f46;
+      opacity: 0.7;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Arrived message ── */
+    .arrived-msg {
+      display: none;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.6rem, 5vw, 2.6rem);
+      font-style: italic;
+      color: #065f46;
+      line-height: 1.4;
+    }
+
+    /* ── Small clover decoration ── */
+    .deco-clovers {
+      font-size: 1.4rem;
+      margin-bottom: 1.2rem;
+      letter-spacing: 0.4em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="clovers-container" id="cloversContainer"></div>
+
+  <div class="card">
+    <div class="deco-clovers">🍀 🍀 🍀</div>
+    <p class="tagline">Till you come back<br/>to Europe</p>
+
+    <div class="countdown" id="countdown">
+      <div class="unit">
+        <span class="number" id="days">--</span>
+        <span class="label">Days</span>
+      </div>
+      <div class="unit">
+        <span class="number" id="hours">--</span>
+        <span class="label">Hours</span>
+      </div>
+      <div class="unit">
+        <span class="number" id="minutes">--</span>
+        <span class="label">Minutes</span>
+      </div>
+      <div class="unit">
+        <span class="number" id="seconds">--</span>
+        <span class="label">Seconds</span>
+      </div>
+    </div>
+
+    <p class="arrival">September 22nd · 07:40 · Milan MXP ✈</p>
+
+    <p class="arrived-msg" id="arrivedMsg">She's back in Europe 🍀<br/>Welcome home, my love.</p>
+  </div>
+
+  <script>
+    // Target: September 22 2026, 07:40 Milan time (CEST = UTC+2)
+    const TARGET = new Date('2026-09-22T05:40:00Z');
+
+    const $ = id => document.getElementById(id);
+    const els = {
+      days:    $('days'),
+      hours:   $('hours'),
+      minutes: $('minutes'),
+      seconds: $('seconds'),
+    };
+
+    function pad(n) { return String(n).padStart(2, '0'); }
+
+    function bump(el) {
+      el.classList.remove('bump');
+      void el.offsetWidth;
+      el.classList.add('bump');
+    }
+
+    let prevSeconds = -1;
+    let prevMinutes = -1;
+
+    function tick() {
+      const now  = new Date();
+      const diff = TARGET - now;
+
+      if (diff <= 0) {
+        $('countdown').style.display = 'none';
+        $('arrivedMsg').style.display = 'block';
+        return;
+      }
+
+      const d = Math.floor(diff / 864e5);
+      const h = Math.floor((diff % 864e5) / 36e5);
+      const m = Math.floor((diff % 36e5)  / 6e4);
+      const s = Math.floor((diff % 6e4)   / 1e3);
+
+      els.days.textContent    = pad(d);
+      els.hours.textContent   = pad(h);
+      els.minutes.textContent = pad(m);
+
+      if (s !== prevSeconds) {
+        els.seconds.textContent = pad(s);
+        bump(els.seconds);
+        prevSeconds = s;
+      }
+      if (m !== prevMinutes) {
+        bump(els.minutes);
+        prevMinutes = m;
+      }
+    }
+
+    setInterval(tick, 500);
+    tick();
+
+    // ── Generate floating clovers ──
+    const CLOVER_CHARS = ['🍀', '🍀', '🍀', '☘️', '🌿', '🍃'];
+    const container = $('cloversContainer');
+    const COUNT = 26;
+
+    for (let i = 0; i < COUNT; i++) {
+      const clover = document.createElement('div');
+      clover.className = 'clover';
+
+      const size  = 12 + Math.random() * 26;
+      const left  = Math.random() * 100;
+      const delay = Math.random() * 16;
+      const dur   = 9 + Math.random() * 13;
+      const char  = CLOVER_CHARS[Math.floor(Math.random() * CLOVER_CHARS.length)];
+
+      clover.style.cssText = `
+        left: ${left}%;
+        font-size: ${size}px;
+        animation-duration: ${dur}s;
+        animation-delay: ${delay}s;
+      `;
+
+      const span = document.createElement('span');
+      span.textContent = char;
+      clover.appendChild(span);
+      container.appendChild(clover);
+    }
+  </script>
+</body>
+</html>
