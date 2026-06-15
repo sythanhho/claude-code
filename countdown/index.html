@@ -98,7 +98,7 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0;
     }
 
     .unit .number {
@@ -109,11 +109,12 @@
       line-height: 1;
       min-width: 2ch;
       text-align: center;
+      transform-origin: center bottom;
       transition: transform 0.15s ease;
     }
 
     .unit .number.bump {
-      transform: scale(1.18);
+      transform: scale(1.12);
     }
 
     .unit .label {
@@ -122,6 +123,7 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: #db2777;
+      margin-top: 0.4rem;
     }
 
     .separator {
